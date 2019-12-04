@@ -142,3 +142,26 @@ var p = new Path2D("M10 10 h 80 v 80 h -80 Z");
 设置图形的填充颜色。
 - strokeStyle = color
 设置图形轮廓的颜色。
+
+```js
+ drawFillStyle(canvas) {
+        let ctx = this.getCtx(canvas);
+        for (let i = 0; i < 6; i++) {
+            for (let j = 0; j < 6; j++) {
+                ctx.fillStyle = `rgb(${Math.floor(255 - 42.5 * i)},${Math.floor(
+                    255 - 42.5 * j
+                )},0)`;
+
+                ctx.fillRect(j * 25, i * 25, 25, 25);
+            }
+        }
+    }
+```
+效果图：
+![](https://raw.githubusercontent.com/LiXiaoRan/PicGoBed/master/img/20191204185909.png)
+
+> ref 注意
+``` js
+ref={ele => (this.canvasPath2dRef = ele)} 
+``` 
+这种方案绑定的ref，不用在jsx中使用`this.canvasPath2dRef.current`获取dom，可以直接通过`this.canvasPath2dRef`获取dom。
