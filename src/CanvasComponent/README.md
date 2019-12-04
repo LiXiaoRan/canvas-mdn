@@ -100,3 +100,36 @@ if (canvasTriRef) {
 
 - `bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)`
 绘制三次贝塞尔曲线，cp1x,cp1y为控制点一，cp2x,cp2y为控制点二，x,y为结束点。
+
+
+## Path2D 对象
+正如我们在前面例子中看到的，你可以使用一系列的路径和绘画命令来把对象“画”在画布上。为了简化代码和提高性能，Path2D对象已可以在较新版本的浏览器中使用，用来缓存或记录绘画命令，这样你将能快速地回顾路径。
+
+```js
+function draw() {
+  var canvas = document.getElementById('canvas');
+  if (canvas.getContext){
+    var ctx = canvas.getContext('2d');
+
+    var rectangle = new Path2D();
+    rectangle.rect(10, 10, 50, 50);
+
+    var circle = new Path2D();
+    circle.moveTo(125, 35);
+    circle.arc(100, 35, 25, 0, 2 * Math.PI);
+
+    ctx.stroke(rectangle);
+    ctx.fill(circle);
+  }
+}
+
+```
+在这个例子中，我们创造了一个矩形和一个圆。它们都被存为Path2D对象，后面再派上用场。随着新的Path2D API产生，几种方法也相应地被更新来使用Path2D对象而不是当前路径。在这里，带路径参数的stroke和fill可以把对象画在画布上。
+
+## 使用 SVG paths
+新的Path2D API有另一个强大的特点，就是使用SVG path data来初始化canvas上的路径。这将使你获取路径时可以以SVG或canvas的方式来重用它们。
+
+这条路径将先移动到点 (M10 10) 然后再水平移动80个单位(h 80)，然后下移80个单位 (v 80)，接着左移80个单位 (h -80)，再回到起点处 (z)。你可以在Path2D constructor 查看这个例子。
+```js
+var p = new Path2D("M10 10 h 80 v 80 h -80 Z");
+```
