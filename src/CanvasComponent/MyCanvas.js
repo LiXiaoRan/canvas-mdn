@@ -94,6 +94,19 @@ class MyCanvas extends Component {
             ctx.bezierCurveTo(85, 25, 75, 37, 75, 40);
             ctx.fill();
         }
+
+        if (this.canvasPath2dRef) {
+            let ctx = this.canvasPath2dRef.getContext("2d");
+            let rectangle = new Path2D();
+            rectangle.rect(10, 10, 50, 50);
+
+            let circle = new Path2D();
+            circle.moveTo(125, 35);
+            circle.arc(100, 35, 25, 0, 2 * Math.PI);
+
+            ctx.stroke(rectangle);
+            ctx.fill(circle);
+        }
     }
 
     render() {
@@ -153,6 +166,16 @@ class MyCanvas extends Component {
                 <Card title="三次贝塞尔曲线" className="wrap_card">
                     <canvas
                         ref={ele => (this.canvasCurRef = ele)}
+                        id="tutorial"
+                        width="150"
+                        height="150"
+                    ></canvas>
+                </Card>
+
+                <Card title="Path2D" className="wrap_card">
+                    <p>新的Path2D API有另一个强大的特点，就是使用SVG path data来初始化canvas上的路径。这将使你获取路径时可以以SVG或canvas的方式来重用它们。</p>
+                    <canvas
+                        ref={ele => (this.canvasPath2dRef = ele)}
                         id="tutorial"
                         width="150"
                         height="150"
