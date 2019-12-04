@@ -4,7 +4,7 @@ class MyCanvas extends Component {
     constructor(props) {
         super(props);
         this.draw=this.draw.bind(this);
-        this.canvasRef=React.createRef()
+        this.canvasRef=React.createRef();
         this.state={
 
         }
@@ -13,6 +13,11 @@ class MyCanvas extends Component {
         let canvas = this.canvasRef.current;
         if (canvas.getContext){
           let ctx = canvas.getContext('2d');
+
+          ctx.fillRect(25,25,100,100);
+          ctx.clearRect(35,35,80,80);
+          ctx.strokeRect(45,45,60,60)  ;
+
         }
       }
 
