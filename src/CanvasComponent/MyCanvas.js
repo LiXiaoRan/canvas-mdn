@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './MyCanvas.css'
+import './MyCanvas.less'
 class MyCanvas extends Component {
     constructor(props) {
         super(props);
