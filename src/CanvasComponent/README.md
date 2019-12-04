@@ -133,3 +133,12 @@ function draw() {
 ```js
 var p = new Path2D("M10 10 h 80 v 80 h -80 Z");
 ```
+
+
+# 色彩 Colors
+到目前为止，我们只看到过绘制内容的方法。如果我们想要给图形上色，有两个重要的属性可以做到：fillStyle 和 strokeStyle。
+
+- fillStyle = color
+设置图形的填充颜色。
+- strokeStyle = color
+设置图形轮廓的颜色。

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "./MyCanvas.less";
+import "./CanvasShape.less";
 import { Card } from "antd";
 class MyCanvas extends Component {
     constructor(props) {

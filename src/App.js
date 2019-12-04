@@ -1,10 +1,11 @@
 import React from 'react';
 import './App.css';
-import MyCanvas from './CanvasComponent/MyCanvas';
+import MyCanvas from './CanvasComponent/CanvasShape';
+import ColorCanvas from "./CanvasComponent/ColorCanvas";
 function App() {
   return (
     <div className="App">
-      <MyCanvas/>
+      <ColorCanvas/>
     </div>
   );
 }
