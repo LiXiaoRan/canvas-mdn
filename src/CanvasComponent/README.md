@@ -57,3 +57,46 @@ draw(){
 
 > 注意：当你调用fill()函数时，所有没有闭合的形状都会自动闭合，所以你不需要调用closePath()函数。但是调用stroke()时不会自动闭合。
 
+## 绘制三角形
+```js
+if (canvasTriRef) {
+            let ctx = canvasTriRef.getContext("2d");
+
+            ctx.beginPath();
+            ctx.moveTo(75, 50);
+            ctx.lineTo(100, 25);
+            ctx.lineTo(100, 75);
+            ctx.fill();
+        }
+```
+### 移动笔触
+一个非常有用的函数，而这个函数实际上并不能画出任何东西，也是上面所描述的路径列表的一部分，这个函数就是moveTo()。或者你可以想象一下在纸上作业，一支钢笔或者铅笔的笔尖从一个点到另一个点的移动过程。
+`moveTo(x, y)`
+将笔触移动到指定的坐标x以及y上。
+当canvas初始化或者beginPath()调用后，你通常会使用moveTo()函数设置起点。我们也能够使用moveTo()绘制一些不连续的路径。
+
+### 线
+绘制直线，需要用到的方法lineTo()。
+
+`lineTo(x, y)`
+绘制一条从当前位置到指定x以及y位置的直线。
+该方法有两个参数：x以及y ，代表坐标系中直线结束的点。开始点和之前的绘制路径有关，之前路径的结束点就是接下来的开始点，等等。。。开始点也可以通过moveTo()函数改变。
+
+### 圆弧
+绘制圆弧或者圆，我们使用arc()方法。当然可以使用arcTo()，不过这个的实现并不是那么的可靠，所以我们这里不作介绍。
+
+- `arc(x, y, radius, startAngle, endAngle, anticlockwise)`
+画一个以（x,y）为圆心的以radius为半径的圆弧（圆），从startAngle开始到endAngle结束，按照- anticlockwise给定的方向（默认为顺时针）来生成。
+- `arcTo(x1, y1, x2, y2, radius)`
+根据给定的控制点和半径画一段圆弧，再以直线连接两个控制点。
+
+> 注意：arc()函数中表示角的单位是弧度，不是角度。角度与弧度的js表达式:
+弧度=`(Math.PI/180)*角度`。
+
+## 二次贝塞尔曲线及三次贝塞尔曲线
+
+- `quadraticCurveTo(cp1x, cp1y, x, y)`
+绘制二次贝塞尔曲线，cp1x,cp1y为一个控制点，x,y为结束点。
+
+- `bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)`
+绘制三次贝塞尔曲线，cp1x,cp1y为控制点一，cp2x,cp2y为控制点二，x,y为结束点。
