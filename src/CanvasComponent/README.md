@@ -3,7 +3,7 @@
 
 ## 栅格
 如图所示，canvas元素默认被网格所覆盖。通常来说网格中的一个单元相当于canvas元素中的一像素。栅格的起点为左上角（坐标为（0,0））。所有元素的位置都相对于原点定位。所以图中蓝色方形左上角的坐标为距离左边（X轴）x像素，距离上边（Y轴）y像素（坐标为（x,y））
-![](https://raw.githubusercontent.com/LiXiaoRan/PicGoBed/master/img/20191204110940.png)
+![删格效果图](https://raw.githubusercontent.com/LiXiaoRan/PicGoBed/master/img/20191204110940.png)
 
 ## 绘制矩形
 不同于 SVG，`<canvas>` **只支持两种形式的图形绘制：矩形和路径**（由一系列点连成的线段）。所有其他类型的图形都是通过一条或者多条路径组合而成的。不过，我们拥有众多路径生成的方法让复杂图形的绘制成为了可能。
@@ -29,7 +29,7 @@ draw(){
     }
   }
 ```
-![](https://raw.githubusercontent.com/LiXiaoRan/PicGoBed/master/img/20191204112008.png)
+![效果图](https://raw.githubusercontent.com/LiXiaoRan/PicGoBed/master/img/20191204112008.png)
 
 
 ## 绘制路径
@@ -143,6 +143,15 @@ var p = new Path2D("M10 10 h 80 v 80 h -80 Z");
 - strokeStyle = color
 设置图形轮廓的颜色。
 
+合法的写法
+```js
+// 这些 fillStyle 的值均为 '橙色'
+ctx.fillStyle = "orange";
+ctx.fillStyle = "#FFA500";
+ctx.fillStyle = "rgb(255,165,0)";
+ctx.fillStyle = "rgba(255,165,0,1)";
+```
+
 ```js
  drawFillStyle(canvas) {
         let ctx = this.getCtx(canvas);
@@ -165,3 +174,81 @@ var p = new Path2D("M10 10 h 80 v 80 h -80 Z");
 ref={ele => (this.canvasPath2dRef = ele)} 
 ``` 
 这种方案绑定的ref，不用在jsx中使用`this.canvasPath2dRef.current`获取dom，可以直接通过`this.canvasPath2dRef`获取dom。
+
+### rgba模式
+// 指定透明颜色，用于描边和填充样式
+```js
+ctx.strokeStyle = "rgba(255,0,0,0.5)";
+ctx.fillStyle = "rgba(255,0,0,0.5)";
+```
+
+## 线型 Line styles
+可以通过一系列属性来设置线的样式。
+
+- lineWidth = value
+设置线条宽度。
+- lineCap = type
+设置线条末端样式。
+- lineJoin = type
+设定线条与线条间接合处的样式。
+- miterLimit = value
+限制当两条线相交时交接处最大长度；所谓交接处长度（斜接长度）是指线条交接处内角顶点到外角顶点的长度。
+- getLineDash()
+返回一个包含当前虚线样式，长度为非负偶数的数组。
+- setLineDash(segments)
+设置当前虚线样式。
+- tlineDashOffset = value
+设置虚线样式的起始偏移量。
+
+![](https://raw.githubusercontent.com/LiXiaoRan/PicGoBed/master/img/20191204203013.png)
+
+> 注意 如果你想要绘制一条从 (3,1) 到 (3,5)，宽度是 1.0 的线条，你会得到像第二幅图一样的结果。实际填充区域（深蓝色部分）仅仅延伸至路径两旁各一半像素。而这半个像素又会以近似的方式进行渲染，这意味着那些像素只是部分着色，结果就是以实际笔触颜色一半色调的颜色来填充整个区域（浅蓝和深蓝的部分）。这就是上例中为何宽度为 1.0 的线并不准确的原因。
+要解决这个问题，你必须对路径施以更加精确的控制。已知粗 1.0 的线条会在路径两边各延伸半像素，那么像第三幅图那样绘制从 (3.5,1) 到 (3.5,5) 的线条，其边缘正好落在像素边界，填充出来就是准确的宽为 1.0 的线条。
+
+>在这个竖线的例子中，其Y坐标刚好落在网格线上，否则端点上同样会出现半渲染的像素点（但还要注意，这种行为的表现取决于当前的lineCap风格，它默认为butt；您可能希望通过将lineCap样式设置为square正方形，来得到与奇数宽度线的半像素坐标相一致的笔画，这样，端点轮廓的外边框将被自动扩展以完全覆盖整个像素格）。
+
+> 还请注意，只有路径的起点和终点受此影响：如果一个路径是通过closePath()来封闭的，它是没有起点和终点的；相反的情况下，路径上的所有端点都与上一个点相连，下一段路径使用当前的lineJoin设置（默认为miter），如果相连路径是水平和/或垂直的话，会导致相连路径的外轮廓根据相交点自动延伸，因此渲染出的路径轮廓会覆盖整个像素格。接下来的两个小节将展示这些额外的行样式。
+
+
+## lineCap
+```js
+drawLineCap(canvas) {
+        let ctx = this.getCtx(canvas);
+        let lineCaps = ["butt", "round", "square"];
+        //画基准线
+        ctx.beginPath();
+        ctx.strokeStyle = "#09f";
+        ctx.moveTo(10, 10);
+        ctx.lineTo(140, 10);
+        ctx.moveTo(10, 140);
+        ctx.lineTo(140, 140);
+        ctx.stroke();
+        ctx.closePath();
+        //画线
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = "20";
+        for (let i = 0; i < lineCaps.length; i++) {
+            const linecap = lineCaps[i];
+            ctx.beginPath();
+            ctx.lineCap = linecap;
+            ctx.moveTo(30 + i * 45, 10);
+            ctx.lineTo(30 + i * 45, 140);
+            ctx.stroke();
+            ctx.fillText(linecap, 18 + i * 45, 175);
+        }
+        ctx.closePath();
+    }
+```
+![](https://raw.githubusercontent.com/LiXiaoRan/PicGoBed/master/img/20191205140644.png)
+
+## lineJoin
+lineJoin 的属性值决定了图形中两线段连接处所显示的样子。它可以是这三种之一：round, bevel 和 miter。默认是 miter。
+
+这里我同样用三条折线来做例子，分别设置不同的 lineJoin 值。最上面一条是 round 的效果，边角处被磨圆了，圆的半径等于线宽。中间和最下面一条分别是 bevel 和 miter 的效果。当值是 miter 的时候，线段会在连接处外侧延伸直至交于一点，延伸效果受到下面将要介绍的 miterLimit 属性的制约。
+
+![](https://developer.mozilla.org/@api/deki/files/89/=Canvas_linejoin.png)
+
+## miterLimit
+就如上一个例子所见的应用 miter 的效果，线段的外侧边缘会延伸交汇于一点上。线段直接夹角比较大的，交点不会太远，但当夹角减少时，交点距离会呈指数级增大。
+
+miterLimit 属性就是用来设定外延交点与连接点的最大距离，如果交点距离大于此值，连接效果会变成了 bevel。

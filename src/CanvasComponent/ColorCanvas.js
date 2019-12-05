@@ -7,22 +7,24 @@ class ColorCanvas extends Component {
         super(props);
         this.canvasFSRef = React.createRef();
         this.canvasFSARCRef = React.createRef();
+        this.canvasGloRef = React.createRef();
+        this.canvasLwRef = React.createRef();
+        this.canvasLcapRef = React.createRef();
         this.draw = this.draw.bind(this);
     }
 
     draw() {
         this.drawFillStyle("canvasFSRef");
         this.drawFillStyleArc("canvasFSARCRef");
+        this.drawGlobalAlpha("canvasGloRef");
+        this.drawLineWidth("canvasLwRef");
+        this.drawLineCap("canvasLcapRef");
     }
 
     getCtx(ref) {
-
         if (this[ref].current) {
-            debugger;
-
             return this[ref].current.getContext("2d");
         }
-
     }
 
     drawFillStyle(canvas) {
@@ -56,6 +58,71 @@ class ColorCanvas extends Component {
         }
     }
 
+    drawGlobalAlpha(canvas) {
+        let ctx = this.getCtx(canvas);
+
+        // 画背景
+        ctx.fillStyle = "#FD0";
+        ctx.fillRect(0, 0, 75, 75);
+        ctx.fillStyle = "#6C0";
+        ctx.fillRect(75, 0, 75, 75);
+        ctx.fillStyle = "#09F";
+        ctx.fillRect(0, 75, 75, 75);
+        ctx.fillStyle = "#F30";
+        ctx.fillRect(75, 75, 75, 75);
+        ctx.fillStyle = "#FFF";
+
+        // 设置透明度值
+        ctx.globalAlpha = 0.2;
+
+        // 画半透明圆
+        for (var i = 0; i < 7; i++) {
+            ctx.beginPath();
+            ctx.arc(75, 75, 10 + 10 * i, 0, Math.PI * 2, true);
+            ctx.fill();
+        }
+    }
+
+    drawLineWidth(canvas) {
+        let ctx = this.getCtx(canvas);
+
+        for (let i = 0; i < 10; i++) {
+            ctx.lineWidth = 1 + i;
+            ctx.beginPath();
+            ctx.moveTo(20 + i * 10, 10);
+            ctx.lineTo(20 + i * 10, 140);
+            ctx.stroke();
+            ctx.closePath();
+        }
+    }
+
+    drawLineCap(canvas) {
+        let ctx = this.getCtx(canvas);
+        let lineCaps = ["butt", "round", "square"];
+        //画基准线
+        ctx.beginPath();
+        ctx.strokeStyle = "#09f";
+        ctx.moveTo(10, 10);
+        ctx.lineTo(140, 10);
+        ctx.moveTo(10, 140);
+        ctx.lineTo(140, 140);
+        ctx.stroke();
+        ctx.closePath();
+        //画线
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = "20";
+        for (let i = 0; i < lineCaps.length; i++) {
+            const linecap = lineCaps[i];
+            ctx.beginPath();
+            ctx.lineCap = linecap;
+            ctx.moveTo(30 + i * 45, 10);
+            ctx.lineTo(30 + i * 45, 140);
+            ctx.stroke();
+            ctx.fillText(linecap, 18 + i * 45, 175);
+        }
+        ctx.closePath();
+    }
+
     componentDidMount() {
         this.draw();
     }
@@ -82,6 +149,34 @@ class ColorCanvas extends Component {
                         id="tutorial"
                         width="150"
                         height="150"
+                    ></canvas>
+                </Card>
+
+                <Card title="globalAlpha " className="wrap_card">
+                    <canvas
+                        ref={this.canvasGloRef}
+                        id="tutorial"
+                        width="150"
+                        height="150"
+                    ></canvas>
+                </Card>
+
+                <Card title="lineWidth  " className="wrap_card">
+                    <canvas
+                        ref={this.canvasLwRef}
+                        id="tutorial"
+                        width="150"
+                        height="150"
+                    ></canvas>
+                </Card>
+
+                <Card title="lineCap  " className="wrap_card">
+                    <p>同样长度但是不同lineCap的线条</p>
+                    <canvas
+                        ref={this.canvasLcapRef}
+                        id="tutorial"
+                        width="150"
+                        height="190"
                     ></canvas>
                 </Card>
             </div>
