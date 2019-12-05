@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Card } from "antd";
 import "./ColorCanvas.less";
 
+let offset = 0;
+
 class ColorCanvas extends Component {
     constructor(props) {
         super(props);
@@ -10,7 +12,9 @@ class ColorCanvas extends Component {
         this.canvasGloRef = React.createRef();
         this.canvasLwRef = React.createRef();
         this.canvasLcapRef = React.createRef();
+        this.canvasLDRef = React.createRef();
         this.draw = this.draw.bind(this);
+        this.dashTimer = null;
     }
 
     draw() {
@@ -19,6 +23,8 @@ class ColorCanvas extends Component {
         this.drawGlobalAlpha("canvasGloRef");
         this.drawLineWidth("canvasLwRef");
         this.drawLineCap("canvasLcapRef");
+        // this.drawLineDash("canvasLDRef");
+        this.march();
     }
 
     getCtx(ref) {
@@ -123,8 +129,32 @@ class ColorCanvas extends Component {
         ctx.closePath();
     }
 
+    drawLineDash(canvas) {
+        //虚线
+        let ctx = this.getCtx(canvas);
+        ctx.clearRect(0, 0, 150, 150);
+        ctx.setLineDash([4, 2]);
+        ctx.lineDashOffset = -offset;
+        ctx.strokeRect(10, 10, 100, 100);
+    }
+
+    march() {
+        offset++;
+        if (offset > 16) {
+            offset = 0;
+        }
+        this.drawLineDash("canvasLDRef");
+        this.dashTimer = setTimeout(this.march.bind(this), 20);
+    }
+
     componentDidMount() {
         this.draw();
+    }
+
+    componentWillUnmount() {
+        if (this.dashTimer) {
+            clearTimeout(this.dashTimer);
+        }
     }
 
     render() {
@@ -177,6 +207,16 @@ class ColorCanvas extends Component {
                         id="tutorial"
                         width="150"
                         height="190"
+                    ></canvas>
+                </Card>
+
+                <Card title="lineDash 虚线  " className="wrap_card">
+                    <p>同样长度但是不同lineCap的线条</p>
+                    <canvas
+                        ref={this.canvasLDRef}
+                        id="tutorial"
+                        width="150"
+                        height="150"
                     ></canvas>
                 </Card>
             </div>
