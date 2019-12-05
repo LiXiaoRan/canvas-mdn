@@ -13,6 +13,9 @@ class ColorCanvas extends Component {
         this.canvasLwRef = React.createRef();
         this.canvasLcapRef = React.createRef();
         this.canvasLDRef = React.createRef();
+        this.canvasLGRef = React.createRef();
+        this.canvasPatternRef = React.createRef();
+        this.canvasShadowRef=React.createRef();
         this.draw = this.draw.bind(this);
         this.dashTimer = null;
     }
@@ -25,6 +28,9 @@ class ColorCanvas extends Component {
         this.drawLineCap("canvasLcapRef");
         // this.drawLineDash("canvasLDRef");
         this.march();
+        this.drawLinearGradient("canvasLGRef");
+        this.drawPattern("canvasPatternRef");
+        this.drawShadow("canvasShadowRef")
     }
 
     getCtx(ref) {
@@ -135,7 +141,7 @@ class ColorCanvas extends Component {
         ctx.clearRect(0, 0, 150, 150);
         ctx.setLineDash([4, 2]);
         ctx.lineDashOffset = -offset;
-        ctx.strokeRect(10, 10, 100, 100);
+        ctx.strokeRect(10, 10, 130, 130);
     }
 
     march() {
@@ -147,6 +153,53 @@ class ColorCanvas extends Component {
         this.dashTimer = setTimeout(this.march.bind(this), 20);
     }
 
+    drawLinearGradient(canvas) {
+        let ctx = this.getCtx(canvas);
+        // Create gradients
+        var lingrad = ctx.createLinearGradient(0, 0, 0, 150);
+        lingrad.addColorStop(0, "#00ABEB");
+        lingrad.addColorStop(0.5, "#fff");
+        lingrad.addColorStop(0.5, "#26C000");
+        lingrad.addColorStop(1, "#fff");
+
+        var lingrad2 = ctx.createLinearGradient(0, 50, 0, 95);
+        lingrad2.addColorStop(0.5, "#000");
+        lingrad2.addColorStop(1, "rgba(0,0,0,0)");
+
+        // assign gradients to fill and stroke styles
+        ctx.fillStyle = lingrad;
+        ctx.strokeStyle = lingrad2;
+
+        // draw shapes
+        ctx.fillRect(10, 10, 130, 130);
+        ctx.strokeRect(50, 50, 50, 50);
+    }
+
+    drawPattern(canvas) {
+        let ctx = this.getCtx(canvas);
+        let img = new Image();
+        img.src =
+            "https://mdn.mozillademos.org/files/222/Canvas_createpattern.png";
+
+        img.onload = function() {
+            // 创建图案
+            let ptrn = ctx.createPattern(img, "repeat");
+            ctx.fillStyle = ptrn;
+            ctx.fillRect(0, 0, 150, 150);
+        };
+    }
+
+    drawShadow(canvas) {
+        let ctx = this.getCtx(canvas);
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
+        ctx.shadowBlur = 2;
+        ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+
+        ctx.font = "20px Times New Roman";
+        ctx.fillStyle = "Black";
+        ctx.fillText("Sample String", 5, 30);
+    }
     componentDidMount() {
         this.draw();
     }
@@ -211,9 +264,39 @@ class ColorCanvas extends Component {
                 </Card>
 
                 <Card title="lineDash 虚线  " className="wrap_card">
-                    <p>同样长度但是不同lineCap的线条</p>
+                    <p>虚线动画</p>
                     <canvas
                         ref={this.canvasLDRef}
+                        id="tutorial"
+                        width="150"
+                        height="150"
+                    ></canvas>
+                </Card>
+
+                <Card title="createLinearGradient 的例子" className="wrap_card">
+                    <p></p>
+                    <canvas
+                        ref={this.canvasLGRef}
+                        id="tutorial"
+                        width="150"
+                        height="150"
+                    ></canvas>
+                </Card>
+
+                <Card title="createPattern 的例子" className="wrap_card">
+                    <p></p>
+                    <canvas
+                        ref={this.canvasPatternRef}
+                        id="tutorial"
+                        width="150"
+                        height="150"
+                    ></canvas>
+                </Card>
+
+                <Card title="shadow" className="wrap_card">
+                    <p></p>
+                    <canvas
+                        ref={this.canvasShadowRef}
                         id="tutorial"
                         width="150"
                         height="150"
