@@ -172,7 +172,7 @@ ctx.fillStyle = "rgba(255,165,0,1)";
 > ref 注意
 ``` js
 ref={ele => (this.canvasPath2dRef = ele)} 
-``` 
+```
 这种方案绑定的ref，不用在jsx中使用`this.canvasPath2dRef.current`获取dom，可以直接通过`this.canvasPath2dRef`获取dom。
 
 ### rgba模式
@@ -323,3 +323,96 @@ function draw() {
 }
 ```
 ![shadow效果图](https://raw.githubusercontent.com/LiXiaoRan/PicGoBed/master/img/20191205160021.png)
+
+## 图
+canvas更有意思的一项特性就是图像操作能力。可以用于动态的图像合成或者作为图形的背景，以及游戏界面（Sprites）等等。浏览器支持的任意格式的外部图片都可以使用，比如PNG、GIF或者JPEG。 **你甚至可以将同一个页面中其他canvas元素生成的图片作为图片源。**
+
+canvas中引入图像需要两步操作
+
+1. 获得一个指向[`HTMLImageElement`](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLImageElement)的对象或者另一个canvas元素的引用作为源，也可以通过提供一个URL的方式来使用图片（参见[例子](http://www.html5canvastutorials.com/tutorials/html5-canvas-images/)）
+2. 使用`drawImage()`函数将图片绘制到画布上
+
+##### 由零开始创建图像
+
+或者我们可以用脚本创建一个新的 [`HTMLImageElement`](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLImageElement) 对象。要实现这个方法，我们可以使用很方便的`Image()构造函数。`
+
+```js
+var img = new Image();   // 创建一个<img>元素
+img.src = 'myImage.png'; // 设置图片源地址
+```
+
+当脚本执行后，图片开始装载。
+
+若调用 `drawImage` 时，图片没装载完，那什么都不会发生（在一些旧的浏览器中可能会抛出异常）。因此你应该用load事件来保证不会在加载完毕之前使用这个图片：
+
+```js
+var img = new Image();   // 创建img元素
+img.onload = function(){
+  // 执行drawImage语句
+}
+img.src = 'myImage.png'; // 设置图片源地址
+```
+
+**通过 data: url 方式嵌入图像**
+
+我们还可以通过 [data:url](http://en.wikipedia.org/wiki/Data:_URL) 方式来引用图像。Data urls 允许用一串 Base64 编码的字符串的方式来定义一个图片。
+
+```js
+img.src = 'data:image/gif;base64,R0lGODlhCwALAIAAAAAA3pn/ZiH5BAEAAAEALAAAAAALAAsAAAIUhA+hkcuO4lmNVindo7qyrIXiGBYAOw==';
+```
+
+其优点就是图片内容即时可用，无须再到服务器兜一圈。（还有一个优点是，可以将 CSS，JavaScript，HTML 和 图片全部封装在一起，迁移起来十分方便。）缺点就是图像没法缓存，图片大的话内嵌的 url 数据会相当的长：
+
+###  绘制图片
+
+一旦获得了源图对象，我们就可以使用 `drawImage` 方法将它渲染到 canvas 里。`drawImage` 方法有三种形态，下面是最基础的一种。
+
+- **`drawImage(image, x, y)`**
+
+  其中 `image` 是 image 或者 canvas 对象，`x` 和 `y 是其在目标 canvas 里的起始坐标。`
+
+> SVG图像必须在 <svg> 根指定元素的宽度和高度。
+
+## 缩放 Scaling
+
+`drawImage` 方法的又一变种是增加了两个用于控制图像在 canvas 中缩放的参数。
+
+- [`drawImage(image, x, y, width, height)`](https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/drawImage)
+
+  这个方法多了2个参数：`width` 和 `height，`这两个参数用来控制 当向canvas画入时应该缩放的大小
+
+**例子：平铺图像**
+
+在这个例子里，我会用一张图片像背景一样在 canvas 中以重复平铺开来。实现起来也很简单，只需要循环铺开经过缩放的图片即可。见下面的代码，第一层 `for` 循环是做行重复，第二层是做列重复的。图像大小被缩放至原来的三分之一，50x38 px。这种方法可以用来很好的达到背景图案的效果，在下面的教程中会看到。
+
+```js
+function draw() {
+  var ctx = document.getElementById('canvas').getContext('2d');
+  var img = new Image();
+  img.onload = function(){
+    for (var i=0;i<4;i++){
+      for (var j=0;j<3;j++){
+        ctx.drawImage(img,j*50,i*38,50,38);
+      }
+    }
+  };
+  img.src = 'https://mdn.mozillademos.org/files/5397/rhino.jpg';
+}
+```
+
+效果图如下：
+
+![img](https://developer.mozilla.org/@api/deki/files/106/=Canvas_scale_image.png)
+
+## 切片 Slicing
+
+`drawImage` 方法的第三个也是最后一个变种有8个新参数，用于控制做切片显示的。
+
+- [`drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)`](https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/drawImage)
+
+  第一个参数和其它的是相同的，都是一个图像或者另一个 canvas 的引用。其它8个参数最好是参照右边的图解，前4个是定义图像源的切片位置和大小，后4个则是定义切片的目标显示位置和大小。
+
+![img](https://developer.mozilla.org/@api/deki/files/79/=Canvas_drawimage.jpg)
+
+切片是个做图像合成的强大工具。假设有一张包含了所有元素的图像，那么你可以用这个方法来合成一个完整图像。例如，你想画一张图表，而手上有一个包含所有必需的文字的 PNG 文件，那么你可以很轻易的根据实际数据的需要来改变最终显示的图表。这方法的另一个好处就是你不需要单独装载每一个图像。
+
