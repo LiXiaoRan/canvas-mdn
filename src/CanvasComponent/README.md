@@ -416,3 +416,56 @@ function draw() {
 
 切片是个做图像合成的强大工具。假设有一张包含了所有元素的图像，那么你可以用这个方法来合成一个完整图像。例如，你想画一张图表，而手上有一个包含所有必需的文字的 PNG 文件，那么你可以很轻易的根据实际数据的需要来改变最终显示的图表。这方法的另一个好处就是你不需要单独装载每一个图像。
 
+# 变形 Transformations
+
+## 状态的保存和恢复 Saving and restoring state
+
+在了解变形之前，我先介绍两个在你开始绘制复杂图形时必不可少的方法。
+
+- [`save()`](https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/save)
+
+  保存画布(canvas)的所有状态
+
+- [`restore()`](https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/restore)
+
+  save 和 restore 方法是用来保存和恢复 canvas 状态的，都没有参数。Canvas 的状态就是当前画面应用的所有样式和变形的一个快照。
+
+Canvas状态存储在栈中，每当`save()`方法被调用后，当前的状态就被推送到栈中保存。一个绘画状态包括：
+
+- 当前应用的变形（即移动，旋转和缩放，见下）
+- `strokeStyle`, `fillStyle`, `globalAlpha`, `lineWidth`, `lineCap`, `lineJoin`, `miterLimit`, `shadowOffsetX`, `shadowOffsetY`, `shadowBlur`, `shadowColor`, `globalCompositeOperation 的值`
+- 当前的裁切路径（clipping path），会在下一节介绍
+
+你可以调用任意多次 `save `方法。
+
+每一次调用 `restore` 方法，上一个保存的状态就从栈中弹出，所有设定都恢复。
+
+>  **这一点和Android中的canvas一模一样，都是一个栈**
+
+下面来看一个例子
+
+```js
+let ctx = this.stref.getContext("2d");
+
+        ctx.fillRect(0, 0, 150, 150); // 使用默认设置绘制一个矩形
+        ctx.save(); // 保存默认状态
+
+        ctx.fillStyle = "#09F"; // 在原有配置基础上对颜色做改变
+        ctx.fillRect(15, 15, 120, 120); // 使用新的设置绘制一个矩形
+        ctx.save();
+
+        ctx.fillStyle = "#fff"; // 再次改变颜色配置
+        ctx.globalAlpha = 0.5;
+        ctx.fillRect(30, 30, 90, 90); //使用新配置绘制矩形
+
+        ctx.restore(); // 重新加载之前的颜色状态,第二次save代码之前的状态
+        ctx.fillRect(45, 45, 60, 60); // 使用上一次的配置绘制一个矩形
+
+        ctx.restore(); // 加载默认颜色配置
+        ctx.fillRect(60, 60, 30, 30); // 使用加载的配置绘制一个矩形
+```
+
+效果如下：
+
+![](https://raw.githubusercontent.com/LiXiaoRan/PicGoBed/master/img/20191219233318.png)
+
